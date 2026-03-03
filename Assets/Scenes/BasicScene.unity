@@ -161,8 +161,11 @@ MonoBehaviour:
   swapObjectsOrigin: {fileID: 896542149}
   cupPrefab: {fileID: 5812044247290603864, guid: 602de0233b983ca4c9375ce421c54bc8, type: 3}
   ballPrefab: {fileID: 0}
-  cupRegistry: []
   DEBUGMakeRandomSwap: 0
+  trialDuration: 30
+  timeBetweenSwapStartRange:
+  - 0.5
+  - 1
 --- !u!4 &215229926
 Transform:
   m_ObjectHideFlags: 0

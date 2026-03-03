@@ -20,6 +20,15 @@ public class Cup : MonoBehaviour
         xPos = x;
         yPos = y;
         doesHaveBall = hasBall;
+        primaryMat = GetComponentInChildren<Renderer>().material;
+    }
+
+    public void showDebug(bool show)
+    {
+        if (show)
+            GetComponentInChildren<Renderer>().material = DEBUGShowHasBallMat;
+        else
+            GetComponentInChildren<Renderer>().material = primaryMat;
     }
 
     // Start is called before the first frame update

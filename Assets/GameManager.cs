@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,13 +16,22 @@ public class GameManager : MonoBehaviour
     public GameObject swapObjectsOrigin;
 
     public GameObject cupPrefab;
-    public GameObject ballPrefab;
+    //public GameObject ballPrefab;
 
-    public Cup[] cupRegistry;
+    Cup[] cupRegistry;
 
     public bool DEBUGMakeRandomSwap = false;
 
     Vector3 downEulerOffset = Vector3.zero;
+
+    //A randomize list to order the swaps randomly
+    List<int> swapList = new List<int>();
+
+    public float trialDuration;
+    public float[] timeBetweenSwapStartRange;
+
+    public bool DEBUGShowMat;
+    Cup ballCup;
 
     // Start is called before the first frame update
     void Start()
@@ -45,10 +55,26 @@ public class GameManager : MonoBehaviour
                 gb.transform.localPosition = new Vector3(xPos * horizontalOffset, yPos * verticalOffset, 0);
                 gb.GetComponent<Cup>().initCup(x, y, y * horizontalCount + x, false);
                 cupRegistry[y * horizontalCount + x] = gb.GetComponent<Cup>();
+                swapList.Add(y * horizontalCount + x);
             }
         }
 
-        cupRegistry[UnityEngine.Random.Range(0, cupRegistry.Length)].doesHaveBall = true;
+        ShuffleList(swapList);
+        int ballIndex = UnityEngine.Random.Range(0, cupRegistry.Length);
+
+        cupRegistry[ballIndex].doesHaveBall = true;
+        ballCup = cupRegistry[ballIndex];
+    }
+
+    void ShuffleList(List<int> swapList)
+    {
+        for (int i = swapList.Count - 1; i > 0; i--)
+        {
+            int j = Random.Range(0, i + 1);
+            int temp = swapList[i];
+            swapList[i] = swapList[j];
+            swapList[j] = temp;
+        }
     }
 
     // Update is called once per frame
@@ -57,10 +83,13 @@ public class GameManager : MonoBehaviour
         if(DEBUGMakeRandomSwap)
         {
             DEBUGMakeRandomSwap = false;
-            StartCoroutine(SwapCupsHalfCircle(UnityEngine.Random.Range(0, cupRegistry.Length),
-                UnityEngine.Random.Range(0, cupRegistry.Length),
-                UnityEngine.Random.Range(switchSpeedRange[0], switchSpeedRange[1])));
+            //StartCoroutine(SwapCupsHalfCircle(UnityEngine.Random.Range(0, cupRegistry.Length),
+            //    UnityEngine.Random.Range(0, cupRegistry.Length),
+            //    UnityEngine.Random.Range(switchSpeedRange[0], switchSpeedRange[1])));
+            startTrialSequence();
         }
+
+        ballCup.showDebug(DEBUGShowMat);
     }
 
     public IEnumerator SwapCupsHalfCircle(int indexA, int indexB, float duration)
@@ -118,10 +147,52 @@ public class GameManager : MonoBehaviour
         b.rotation = down;
 
         (cupRegistry[indexA], cupRegistry[indexB]) = (cupRegistry[indexB], cupRegistry[indexA]);
+
+        swapList.Insert(Random.Range(0, swapList.Count + 1), indexA);
+        swapList.Insert(Random.Range(0, swapList.Count + 1), indexB);
     }
 
     private static Vector3 RotateAroundAxis(Vector3 v, Vector3 axisUnit, float angleDeg)
     {
         return Quaternion.AngleAxis(angleDeg, axisUnit) * v;
+    }
+
+    public void startTrialSequence()
+    {
+        StartCoroutine(singleTrialSequence());
+    }
+
+    int PopRandomAvailable()
+    {
+        int k = Random.Range(0, swapList.Count);
+        int index = swapList[k];
+        swapList.RemoveAt(k);
+        return index;
+    }
+
+    IEnumerator singleTrialSequence()
+    {
+        float t = 0f;
+        while (t < trialDuration)
+        {
+            if (swapList.Count < 2)
+            {
+                yield return null;
+                continue;
+            }
+
+            int indexA = PopRandomAvailable();
+            int indexB = PopRandomAvailable();
+
+            StartCoroutine(SwapCupsHalfCircle(
+                indexA,
+                indexB,
+                Random.Range(switchSpeedRange[0], switchSpeedRange[1])
+            ));
+            float wait = Random.Range(timeBetweenSwapStartRange[0], timeBetweenSwapStartRange[1]);
+            yield return new WaitForSeconds(wait);
+
+            t += wait;
+        }
     }
 }
