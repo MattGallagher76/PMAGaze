@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class Cup : MonoBehaviour
@@ -29,6 +30,12 @@ public class Cup : MonoBehaviour
             GetComponentInChildren<Renderer>().material = DEBUGShowHasBallMat;
         else
             GetComponentInChildren<Renderer>().material = primaryMat;
+    }
+
+    public void setBaselineMaterial(Material mat)
+    {
+        GetComponentInChildren<Renderer>().material = mat;
+        primaryMat = mat;
     }
 
     // Start is called before the first frame update

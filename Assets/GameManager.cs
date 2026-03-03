@@ -49,8 +49,8 @@ public class GameManager : MonoBehaviour
                 GameObject gb = Instantiate(cupPrefab);
                 gb.transform.parent = swapObjectsOrigin.transform;
 
-                float xPos = - horizontalCount / 2f + x;
-                float yPos = -verticalCount / 2f + y;
+                float xPos = x - (horizontalCount - 1) / 2f;
+                float yPos = y - (verticalCount - 1) / 2f;
 
                 gb.transform.localPosition = new Vector3(xPos * horizontalOffset, yPos * verticalOffset, 0);
                 gb.GetComponent<Cup>().initCup(x, y, y * horizontalCount + x, false);
@@ -172,6 +172,11 @@ public class GameManager : MonoBehaviour
 
     IEnumerator singleTrialSequence()
     {
+        yield return new WaitForSeconds(2f);
+        DEBUGShowMat = true;
+        yield return new WaitForSeconds(2f);
+        DEBUGShowMat = false;
+        yield return new WaitForSeconds(2f);
         float t = 0f;
         while (t < trialDuration)
         {
@@ -194,5 +199,15 @@ public class GameManager : MonoBehaviour
 
             t += wait;
         }
+        yield return new WaitForSeconds(2f);
+        DEBUGShowMat = true;
+        yield return new WaitForSeconds(2f);
+        DEBUGShowMat = false;
+        yield return new WaitForSeconds(2f);
+    }
+
+    public Cup[] getCups()
+    {
+        return cupRegistry;
     }
 }

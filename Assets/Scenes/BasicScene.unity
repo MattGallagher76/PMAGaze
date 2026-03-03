@@ -160,12 +160,12 @@ MonoBehaviour:
   - 2
   swapObjectsOrigin: {fileID: 896542149}
   cupPrefab: {fileID: 5812044247290603864, guid: 602de0233b983ca4c9375ce421c54bc8, type: 3}
-  ballPrefab: {fileID: 0}
-  DEBUGMakeRandomSwap: 0
-  trialDuration: 30
+  DEBUGMakeRandomSwap: 1
+  trialDuration: 10
   timeBetweenSwapStartRange:
-  - 0.5
-  - 1
+  - 0.3
+  - 0.7
+  DEBUGShowMat: 0
 --- !u!4 &215229926
 Transform:
   m_ObjectHideFlags: 0
@@ -175,7 +175,7 @@ Transform:
   m_GameObject: {fileID: 215229924}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 1.001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -448,11 +448,63 @@ Transform:
   m_GameObject: {fileID: 896542149}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.763, z: 0}
+  m_LocalPosition: {x: 0, y: 1.319, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 215229926}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1034584420
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1034584422}
+  - component: {fileID: 1034584421}
+  m_Layer: 0
+  m_Name: CosmeticManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1034584421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1034584420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a29308503b7716498bba969bd3b380b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  score: 10
+  baseMaterial: {fileID: -6478536213147159724, guid: 43bb27596bc2e8b4e84860c2ade40008, type: 3}
+  firstCosmetic: {fileID: 2100000, guid: 5af30c389fe00134dbf4e2e1082a8875, type: 2}
+  secondCosmetic: {fileID: 2100000, guid: e541c0376f050e24e8866b4ec1136063, type: 2}
+  finalCosmetic: {fileID: 2100000, guid: 8470ab0fa822b2749948314a67224bbe, type: 2}
+  pointCost: 00000000000000000000000000000000
+  selectedMaterial: 0
+  DEBUGUNLOCK: 0
+--- !u!4 &1034584422
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1034584420}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1249617917
 GameObject:
@@ -739,3 +791,4 @@ SceneRoots:
   - {fileID: 2092139010}
   - {fileID: 1249617921}
   - {fileID: 215229926}
+  - {fileID: 1034584422}
