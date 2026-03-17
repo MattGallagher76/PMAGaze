@@ -31,11 +31,16 @@ public class GameManager : MonoBehaviour
     public float[] timeBetweenSwapStartRange;
 
     public bool DEBUGShowMat;
-    Cup ballCup;
+    Cup[] ballCup;
+
+    TrialManager tm;
+
+    public int ballCupCount;
 
     // Start is called before the first frame update
     void Start()
     {
+        tm = FindObjectOfType<TrialManager>();
         buildCups();
     }
 
@@ -60,10 +65,13 @@ public class GameManager : MonoBehaviour
         }
 
         ShuffleList(swapList);
-        int ballIndex = UnityEngine.Random.Range(0, cupRegistry.Length);
 
-        cupRegistry[ballIndex].doesHaveBall = true;
-        ballCup = cupRegistry[ballIndex];
+        for (int i = 0; i < ballCupCount; i++)
+        {
+            int ballIndex = UnityEngine.Random.Range(0, cupRegistry.Length);
+            cupRegistry[ballIndex].doesHaveBall = true;
+            ballCup[i] = cupRegistry[ballIndex];
+        }
     }
 
     void ShuffleList(List<int> swapList)
@@ -80,16 +88,16 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(DEBUGMakeRandomSwap)
-        {
-            DEBUGMakeRandomSwap = false;
-            //StartCoroutine(SwapCupsHalfCircle(UnityEngine.Random.Range(0, cupRegistry.Length),
-            //    UnityEngine.Random.Range(0, cupRegistry.Length),
-            //    UnityEngine.Random.Range(switchSpeedRange[0], switchSpeedRange[1])));
-            startTrialSequence();
-        }
+        //if(DEBUGMakeRandomSwap)
+        //{
+        //    DEBUGMakeRandomSwap = false;
+        //    //StartCoroutine(SwapCupsHalfCircle(UnityEngine.Random.Range(0, cupRegistry.Length),
+        //    //    UnityEngine.Random.Range(0, cupRegistry.Length),
+        //    //    UnityEngine.Random.Range(switchSpeedRange[0], switchSpeedRange[1])));
+        //    startTrialSequence();
+        //}
 
-        ballCup.showDebug(DEBUGShowMat);
+        //ballCup.showDebug(DEBUGShowMat);
     }
 
     public IEnumerator SwapCupsHalfCircle(int indexA, int indexB, float duration)
@@ -170,12 +178,20 @@ public class GameManager : MonoBehaviour
         return index;
     }
 
+    public void debugMatBallCups(bool showState)
+    {
+        foreach(Cup c in getCups())
+        {
+            c.showDebug(showState);
+        }
+    }
+
     IEnumerator singleTrialSequence()
     {
         yield return new WaitForSeconds(2f);
-        DEBUGShowMat = true;
+        debugMatBallCups(true);
         yield return new WaitForSeconds(2f);
-        DEBUGShowMat = false;
+        debugMatBallCups(false);
         yield return new WaitForSeconds(2f);
         float t = 0f;
         while (t < trialDuration)
@@ -199,11 +215,12 @@ public class GameManager : MonoBehaviour
 
             t += wait;
         }
-        yield return new WaitForSeconds(2f);
-        DEBUGShowMat = true;
-        yield return new WaitForSeconds(2f);
-        DEBUGShowMat = false;
-        yield return new WaitForSeconds(2f);
+        tm.updateTrialState(1);
+        //yield return new WaitForSeconds(2f);
+        //DEBUGShowMat = true;
+        //yield return new WaitForSeconds(2f);
+        //DEBUGShowMat = false;
+        //yield return new WaitForSeconds(2f);
     }
 
     public Cup[] getCups()

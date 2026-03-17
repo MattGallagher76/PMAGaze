@@ -15,6 +15,8 @@ public class Cup : MonoBehaviour
     public Material DEBUGShowHasBallMat;
     Material primaryMat;
 
+    public bool hasBeenSelected = false;
+
     public void initCup(int x, int y, int id, bool hasBall)
     {
         this.id = id;
