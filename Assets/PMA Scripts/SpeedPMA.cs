@@ -1,30 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 
-public class LightPMA : MonoBehaviour
+public class SpeedPMA : MonoBehaviour
 {
-    [Header("Light to use for the attack.")]
-    public Light PMALight;
-
-    [Range(0f, 1f)] [Header("How dark the light should become. Lower = darker.")]
-
-    public float PMAIntensity;
+    [Header("The game manager script to affect.")]
+    public GameManager game;
     [Header("How long in seconds the attack should last.")]
     public int PMATime;
-    [Header("Click to test the attack.")]
-
-    public bool PMATest;
-    private float initialIntensity;
+    [Range(0f, 2f)][Header("The percentage the lower and upper bounds of the speed should be changed by.")]
+    public float rate;
+    [Header("Test the attack.")]
+    public bool test;
     private float endTime;
     private bool activeTest;
+    private float[] initial;
 
     // Start is called before the first frame update
     void Start()
     {
-        initialIntensity = PMALight.intensity;
         endTime = 0;
         activeTest = false;
+        initial = new float[2];
+        Array.Copy(game.switchSpeedRange, initial, 2);
     }
 
     // Update is called once per frame
@@ -33,20 +32,21 @@ public class LightPMA : MonoBehaviour
         if(activeTest && Time.time >= endTime)
         {
             activeTest = false;
-            PMALight.intensity = initialIntensity;
+            Array.Copy(initial, game.switchSpeedRange, 2);
         }
-        if(PMATest)
+        if(test)
         {
-            PMATest = false;
+            test = false;
             endTime = Time.time + PMATime;
             activeTest = true;
-            PMALight.intensity = PMAIntensity;
+            game.switchSpeedRange[0] *= rate;
+            game.switchSpeedRange[1] *= rate;
         }
     }
 
     // Call this function to use the PMA
     public void Attack()
     {
-        PMATest = true;
+        test = true;
     }
 }

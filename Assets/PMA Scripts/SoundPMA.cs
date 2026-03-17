@@ -24,4 +24,10 @@ public class SoundPMA : MonoBehaviour
             AudioSource.PlayClipAtPoint(clip, new Vector3(0, 0, 0), 1f);
         }
     }
+
+    // Call this function to use the PMA
+    public void Attack()
+    {
+        test = true;
+    }
 }
