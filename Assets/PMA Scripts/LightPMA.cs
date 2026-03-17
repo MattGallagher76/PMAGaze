@@ -43,4 +43,10 @@ public class LightPMA : MonoBehaviour
             PMALight.intensity = PMAIntensity;
         }
     }
+
+    // Call this function to use the PMA
+    public void Attack()
+    {
+        PMATest = true;
+    }
 }
