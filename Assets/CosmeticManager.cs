@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
 
-public class CosemticManager : MonoBehaviour
+public class CosmeticManager : MonoBehaviour
 {
     public int score = 10;
 
@@ -12,9 +12,7 @@ public class CosemticManager : MonoBehaviour
     public Material firstCosmetic;
     public Material secondCosmetic;
     public Material finalCosmetic;
-    public int[] pointCost;
 
-    bool[] isUnlocked = {true, false, true};
     public int selectedMaterial = 0;
 
     GameManager gm;
@@ -39,7 +37,6 @@ public class CosemticManager : MonoBehaviour
 
     public void unlockCupCosmetic(int index)
     {
-        isUnlocked[index] = true;
         Cup[] cList = gm.getCups();
         foreach(Cup c in cList)
         {
