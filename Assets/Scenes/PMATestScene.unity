@@ -312,6 +312,7 @@ GameObject:
   - component: {fileID: 407573491}
   - component: {fileID: 407573493}
   - component: {fileID: 407573494}
+  - component: {fileID: 407573495}
   m_Layer: 0
   m_Name: PMAManager
   m_TagString: Untagged
@@ -379,6 +380,22 @@ MonoBehaviour:
   game: {fileID: 215229925}
   PMATime: 5
   rate: 0.5
+  test: 0
+--- !u!114 &407573495
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 407573490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7eb533a64aacb4499bcf6f7ad834649, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  game: {fileID: 215229925}
+  PMATime: 3
+  contrast: {fileID: 3881136728656820021, guid: db90c708d80c57549829156fa7167667, type: 3}
   test: 0
 --- !u!1001 &441087506
 PrefabInstance:
