@@ -396,6 +396,8 @@ MonoBehaviour:
   game: {fileID: 215229925}
   PMATime: 3
   contrast: {fileID: 3881136728656820021, guid: db90c708d80c57549829156fa7167667, type: 3}
+  rate: 1
+  color: 0
   test: 0
 --- !u!1001 &441087506
 PrefabInstance:
