@@ -34,7 +34,7 @@ public class SpeedPMA : MonoBehaviour
             activeTest = false;
             Array.Copy(initial, game.switchSpeedRange, 2);
         }
-        if(test)
+        if(!activeTest && test)
         {
             test = false;
             endTime = Time.time + PMATime;

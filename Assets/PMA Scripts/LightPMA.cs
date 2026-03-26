@@ -35,7 +35,7 @@ public class LightPMA : MonoBehaviour
             activeTest = false;
             PMALight.intensity = initialIntensity;
         }
-        if(PMATest)
+        if(!activeTest && PMATest)
         {
             PMATest = false;
             endTime = Time.time + PMATime;
