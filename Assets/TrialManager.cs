@@ -21,7 +21,14 @@ public class TrialManager : MonoBehaviour
     //3 - speed up
     //4 - alter lighting
     //5 - new sounds
-    //5 - Remove/delay sounds
+
+    public ContrastPMA contrastPMA;
+    public BufferPMA bufferPMA;
+    public SpeedPMA speedPMA;
+    public LightPMA lightPMA;
+    public SoundPMA soundPMA;
+
+    public float PMAFrequency;
 
     public int trialCount;
     public int currentTrialCount;
@@ -31,6 +38,9 @@ public class TrialManager : MonoBehaviour
     string dataLogFilePath;
     GameManager gm;
     int trialState = 0;
+
+    public bool DEBUG_TriggerPull;
+    public int cupCount;
     
     void Start()
     {
@@ -47,6 +57,8 @@ public class TrialManager : MonoBehaviour
 
     public void startTrial()
     {
+        gm.ballCupCount = cupCount;
+        gm.buildCups();
         gm.startTrialSequence();
         currentTrialCount++;
 
@@ -64,7 +76,7 @@ public class TrialManager : MonoBehaviour
 
     public void confirmSelection()
     {
-        trialState = 2;
+        trialState = 3;
         string selectedCups = "";
         foreach(Cup c in gm.getCups())
         {
@@ -83,16 +95,55 @@ public class TrialManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(trialState == 0)
+        {
+            if(DEBUG_TriggerPull || triggerLeft.action.ReadValue<float>() > 0.1f || triggerRight.action.ReadValue<float>() > 0.1f)
+            {
+                startTrial();
+                DEBUG_TriggerPull = false;
+            }
+        }
         if(trialState == 1)
+        {
+            //Conduct attacks
+            if (UnityEngine.Random.Range(0f, 1f) < PMAFrequency)
+            {
+                switch (currentPMA)
+                {
+                    case 1:
+                        contrastPMA.Attack();
+                        break;
+                    case 2:
+                        bufferPMA.Attack();
+                        break;
+                    case 3:
+                        speedPMA.Attack();
+                        break;
+                    case 4:
+                        lightPMA.Attack();
+                        break;
+                    case 5:
+                        soundPMA.Attack();
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+        }
+        if(trialState == 2)
         {
             //Swaps have finished, open for selection
 
             //Left
             if(triggerLeft.action.ReadValue<float>() > 0.1f)
             {
-                if(rayInteractorLeft.TryGetCurrent3DRaycastHit(out RaycastHit hit))
+                RaycastHit hit;
+                if (Physics.Raycast(rayInteractorLeft.gameObject.transform.position, rayInteractorLeft.gameObject.transform.forward, out hit, Mathf.Infinity))
                 {
-                    if(hit.collider.gameObject.GetComponent<Cup>() != null)
+                    if (hit.collider.gameObject.GetComponent<Cup>() != null)
                     {
                         hit.collider.gameObject.GetComponent<Cup>().hasBeenSelected = true;
                     }
@@ -100,7 +151,8 @@ public class TrialManager : MonoBehaviour
             }
             else if(triggerRight.action.ReadValue<float>() > 0.1f)
             {
-                if (rayInteractorRight.TryGetCurrent3DRaycastHit(out RaycastHit hit))
+                RaycastHit hit;
+                if (Physics.Raycast(rayInteractorRight.gameObject.transform.position, rayInteractorLeft.gameObject.transform.forward, out hit, Mathf.Infinity))
                 {
                     if (hit.collider.gameObject.GetComponent<Cup>() != null)
                     {

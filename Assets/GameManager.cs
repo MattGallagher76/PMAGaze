@@ -41,7 +41,6 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         tm = FindObjectOfType<TrialManager>();
-        buildCups();
     }
 
     public void buildCups()
@@ -65,12 +64,14 @@ public class GameManager : MonoBehaviour
         }
 
         ShuffleList(swapList);
-
+        Debug.Log(ballCupCount);
+        ballCup = new Cup[ballCupCount];
         for (int i = 0; i < ballCupCount; i++)
         {
             int ballIndex = UnityEngine.Random.Range(0, cupRegistry.Length);
             cupRegistry[ballIndex].doesHaveBall = true;
             ballCup[i] = cupRegistry[ballIndex];
+            Debug.Log(i);
         }
     }
 
@@ -188,7 +189,7 @@ public class GameManager : MonoBehaviour
 
     IEnumerator singleTrialSequence()
     {
-        yield return new WaitForSeconds(2f);
+        tm.updateTrialState(1);
         debugMatBallCups(true);
         yield return new WaitForSeconds(2f);
         debugMatBallCups(false);
@@ -215,7 +216,7 @@ public class GameManager : MonoBehaviour
 
             t += wait;
         }
-        tm.updateTrialState(1);
+        tm.updateTrialState(2);
         //yield return new WaitForSeconds(2f);
         //DEBUGShowMat = true;
         //yield return new WaitForSeconds(2f);

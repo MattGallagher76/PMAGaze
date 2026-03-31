@@ -28,7 +28,7 @@ public class Cup : MonoBehaviour
 
     public void showDebug(bool show)
     {
-        if (show)
+        if (show && doesHaveBall)
             GetComponentInChildren<Renderer>().material = DEBUGShowHasBallMat;
         else
             GetComponentInChildren<Renderer>().material = primaryMat;
