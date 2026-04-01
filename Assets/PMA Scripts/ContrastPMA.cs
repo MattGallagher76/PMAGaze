@@ -1,14 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ContrastPMA : MonoBehaviour
 {
-    [Header("The game manager script to affect.")]
-    public GameManager game;
     [Header("How long in seconds the attack should last.")]
     public int PMATime;
-    [Header("Prefab to spawn.")]
+    [Header("Panel to spawn.")]
     public GameObject contrast;
     [Range(1f, 2f)][Header("The variation in size contrast objects should have. 1 means same size.")]
     public float rate;
@@ -18,8 +17,7 @@ public class ContrastPMA : MonoBehaviour
     public bool test;
     private float endTime;
     private bool activeTest;
-    private Cup[] cups;
-    private Transform target;
+    private Vector3 origin;
     private GameObject clone;
     // Start is called before the first frame update
     void Start()
@@ -27,6 +25,8 @@ public class ContrastPMA : MonoBehaviour
         endTime = 0;
         activeTest = false;
         rate -= 0.5f;
+        contrast.SetActive(false);
+        origin = contrast.transform.localScale;
     }
 
     // Update is called once per frame
@@ -35,21 +35,21 @@ public class ContrastPMA : MonoBehaviour
         if(activeTest && Time.time >= endTime)
         {
             activeTest = false;
-            Destroy(clone);
+            contrast.SetActive(false);
+            contrast.transform.localScale = origin;
         }
         if(!activeTest && test)
         {
             test = false;
-            cups = game.getCups();
             System.Random random = new System.Random();
+            contrast.SetActive(true);
             endTime = Time.time + PMATime;
             activeTest = true;
-            target = cups[random.Next(cups.Length)].transform;
-            clone = Instantiate(contrast, target.position, target.rotation);
+            clone = contrast;
             Vector3 tempScale = new Vector3(clone.transform.localScale.x * (random.Next(50, (int)(rate * 100)) / 100f), clone.transform.localScale.y * (random.Next(50, (int)(rate * 100)) / 100f), clone.transform.localScale.z);
             clone.transform.localScale = tempScale;
-            Color32 col = clone.GetComponent<Renderer>().material.color;
-            clone.GetComponent<Renderer>().material.color = new Color32((byte)random.Next(col.r - color, col.r + color), (byte)random.Next(col.g - color, col.g + color), (byte)random.Next(col.b - color, col.b + color), col.a);
+            Color32 col = clone.GetComponent<Image>().material.color;
+            clone.GetComponent<Image>().material.color = new Color32((byte)random.Next(col.r - color, col.r + color), (byte)random.Next(col.g - color, col.g + color), (byte)random.Next(col.b - color, col.b + color), col.a);
         }
     }
 
