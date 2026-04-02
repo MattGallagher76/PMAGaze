@@ -67,6 +67,7 @@ public class TrialManager : MonoBehaviour
             currentPMA = 0;
         else
             currentPMA = UnityEngine.Random.Range(1, PMACount + 1);
+        Debug.Log("Current PMA: " + currentPMA);
     }
 
     public void updateTrialState(int i)
@@ -90,6 +91,8 @@ public class TrialManager : MonoBehaviour
                 correctCups += c.id + "-";
         }
         string line = Time.time + "," + userID + "," + selectedCups + "," + (selectedCups.Equals(correctCups)) + "," + "TODO" + "TODO";
+        gm.destroyCups(selectedCups.Equals(correctCups));
+        trialState = 0;
     }
 
     // Update is called once per frame
@@ -143,9 +146,13 @@ public class TrialManager : MonoBehaviour
                 RaycastHit hit;
                 if (Physics.Raycast(rayInteractorLeft.gameObject.transform.position, rayInteractorLeft.gameObject.transform.forward, out hit, Mathf.Infinity))
                 {
-                    if (hit.collider.gameObject.GetComponent<Cup>() != null)
+                    Cup c = hit.collider.gameObject.GetComponent<Cup>();
+                    Debug.Log(c.id);
+                    if (c != null)
                     {
-                        hit.collider.gameObject.GetComponent<Cup>().hasBeenSelected = true;
+                        Debug.Log(c.id);
+                        c.hasBeenSelected = !c.hasBeenSelected;
+                        c.showDebug(c.hasBeenSelected);
                     }
                 }
             }
@@ -154,9 +161,13 @@ public class TrialManager : MonoBehaviour
                 RaycastHit hit;
                 if (Physics.Raycast(rayInteractorRight.gameObject.transform.position, rayInteractorLeft.gameObject.transform.forward, out hit, Mathf.Infinity))
                 {
-                    if (hit.collider.gameObject.GetComponent<Cup>() != null)
+                    Cup c = hit.collider.gameObject.GetComponent<Cup>();
+                    Debug.Log(c.id);
+                    if (c != null)
                     {
-                        hit.collider.gameObject.GetComponent<Cup>().hasBeenSelected = true;
+                        Debug.Log(c.id);
+                        c.hasBeenSelected = !c.hasBeenSelected;
+                        c.showDebug(c.hasBeenSelected);
                     }
                 }
             }

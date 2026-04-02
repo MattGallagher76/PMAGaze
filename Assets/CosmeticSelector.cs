@@ -1,39 +1,47 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SocialPlatforms.Impl;
+using UnityEngine.EventSystems;
 
-public class CosmeticSelector : MonoBehaviour
+public class CosmeticSelector : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     public int cost;
     public GameObject lockedIndicator;
     public TextMeshProUGUI costText;
-    CosmeticManager cosMang;
-
     public bool isLocked;
+
+    private CosmeticManager cosMang;
 
     private void Start()
     {
         cosMang = FindObjectOfType<CosmeticManager>();
     }
 
-    public void onHoverStart()
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        if(cosMang.score < cost)
+        OnHoverStart();
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        OnHoverEnd();
+    }
+
+    public void OnHoverStart()
+    {
+        if (isLocked && cosMang.score < cost)
         {
             lockedIndicator.SetActive(true);
         }
     }
 
-    public void onHoverEnd()
+    public void OnHoverEnd()
     {
         lockedIndicator.SetActive(false);
     }
 
-    public void unlockItem(int index)
+    public void UnlockItem(int index)
     {
-        if(isLocked)
+        if (isLocked)
         {
             if (cosMang.score >= cost)
             {
@@ -43,7 +51,7 @@ public class CosmeticSelector : MonoBehaviour
             }
             else
             {
-                //Play bad noise
+                // Play bad noise
             }
         }
         else

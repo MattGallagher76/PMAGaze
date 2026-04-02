@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using static UnityEngine.Rendering.DebugUI;
 
@@ -36,10 +37,13 @@ public class GameManager : MonoBehaviour
     TrialManager tm;
 
     public int ballCupCount;
+    CosmeticManager cm;
+    public TextMeshProUGUI scoreDisplay;
 
     // Start is called before the first frame update
     void Start()
     {
+        cm = FindObjectOfType<CosmeticManager>();
         tm = FindObjectOfType<TrialManager>();
     }
 
@@ -72,6 +76,17 @@ public class GameManager : MonoBehaviour
             cupRegistry[ballIndex].doesHaveBall = true;
             ballCup[i] = cupRegistry[ballIndex];
             Debug.Log(i);
+        }
+    }
+
+    public void destroyCups(bool incScore)
+    {
+        cm.score += (incScore ? 1 : 0);
+        scoreDisplay.text = "Score: " + cm.score.ToString("D2");
+        foreach (Cup c in cupRegistry)
+        {
+            Destroy(c);
+            cupRegistry = null;
         }
     }
 

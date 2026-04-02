@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ConfirmSelectionButton : MonoBehaviour
+public class startTrialButton : MonoBehaviour
 {
     TrialManager tm;
-
-    // Start is called before the first frame update
     void Start()
     {
         tm = FindObjectOfType<TrialManager>();
@@ -14,9 +12,10 @@ public class ConfirmSelectionButton : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name.ToLower().Contains("controller"))
+        if(other.gameObject.name.ToLower().Contains("controller"))
         {
-            tm.confirmSelection();
+            tm.startTrial();
         }
     }
+
 }
