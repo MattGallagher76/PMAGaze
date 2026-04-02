@@ -4,6 +4,8 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.Interaction.Toolkit.Interactors;
+using UnityEngine.XR;
+using UnityEngine.UI;
 
 public class TrialManager : MonoBehaviour
 {
@@ -36,20 +38,33 @@ public class TrialManager : MonoBehaviour
     public bool DEBUG_TriggerPull;
     public int cupCount;
 
+    // CMA Variables
+    public UnityEngine.XR.InputDevice leftController, rightController;
+    public Canvas valenceCanvas, arousalCanvas;
+    public bool leftTrigger, rightTrigger;
+    private Slider valenceSlider, arousalSlider; 
+
+
     void Start()
     {
         triggerRight.action.Enable();
         triggerLeft.action.Enable();
 
         gm = FindObjectOfType<GameManager>();
-        Random.InitState(userID * 1367);
+      //Random.InitState(userID * 1367);
 
         dataLogFilePath = Path.Combine(Application.dataPath, "user" + userID + "trialStateLogging.csv");
 
         if (!File.Exists(dataLogFilePath))
         {
-            File.WriteAllText(dataLogFilePath, "Time,UserID,Selected Cups,Correct Cups,Successful Trial,PMAState,PMAIntensity");
+            File.WriteAllText(dataLogFilePath, "Time,UserID,Selected Cups,Correct Cups,Successful Trial,PMAState,PMAIntensity,Valence,Arousal");
         }
+
+        leftController = InputDevices.GetDeviceAtXRNode(XRNode.LeftHand);
+        rightController = InputDevices.GetDeviceAtXRNode(XRNode.RightHand);
+        valenceCanvas.gameObject.SetActive(false);
+        arousalCanvas.gameObject.SetActive(false);
+
     }
 
     public void startTrial()
@@ -62,7 +77,7 @@ public class TrialManager : MonoBehaviour
         if (currentTrialCount % (trialCount / baselineCount) == 0)
             currentPMA = 0;
         else
-            currentPMA = UnityEngine.Random.Range(1, PMACount + 1);
+            currentPMA = UnityEngine.Random.Range(1, PMACount);
 
         Debug.Log("Current PMA: " + currentPMA);
     }
@@ -74,9 +89,6 @@ public class TrialManager : MonoBehaviour
 
     public void confirmSelection()
     {
-        Debug.Log(gm == null);
-        Debug.Log(gm.getCups() == null);
-        Debug.Log(gm.getCups().Length);
         trialState = 3;
 
         string selectedCups = "";
@@ -93,24 +105,60 @@ public class TrialManager : MonoBehaviour
                 correctCups += c.id + "-";
         }
 
-        string line = Time.time + "," + userID + "," + selectedCups + "," + (selectedCups.Equals(correctCups)) + "," + "TODO" + "TODO";
-
         gm.destroyCups(selectedCups.Equals(correctCups));
+        // trialState = 0; //trialState = 0 means going back to the start.
+        // INDICATE THE LAST ROW OF GAZE DATA TRACKED DURING THE TRIAL IN THE GAZE LOGGER CSV!
+     // trialState = 0;
+        
+        //The Valence canvas pops up.
+        valenceCanvas.gameObject.SetActive(true);
+        valenceSlider = FindFirstObjectByType<Slider>();
+
+        //If the trigger is pressed (on either controller),
+        if (IsTriggerPressed())
+        {
+            //Log the Valence for this trial, PMA, and participant.
+            var valence = valenceSlider.value;
+            //Disable the Valence canvas.
+            valenceCanvas.gameObject.SetActive(false);
+            //Enable the Arousal canvas.
+            arousalCanvas.gameObject.SetActive(true);
+            arousalSlider = FindFirstObjectByType<Slider>();
+            //if the trigger is pressed,
+            if (IsTriggerPressed())
+            {
+                //Log the Arousal for this trial, PMA, and participant.
+                var arousal = arousalSlider.value;
+                //Disable the Arousal canvas.
+                arousalCanvas.gameObject.SetActive(false);
+
+                string line = Time.time + "," + userID + "," + selectedCups + "," + (selectedCups.Equals(correctCups)) + "," + "TODO" + "," + "TODO" + "," + valence + "," + arousal;
+                if (!File.Exists(dataLogFilePath))
+                {
+                    File.WriteAllText(dataLogFilePath, line);
+                }
+
+            }
+
+        }
         trialState = 0;
+        
+        
+
     }
 
     void Update()
     {
-        if (trialState == 0)
-        {
-            if (DEBUG_TriggerPull || triggerLeft.action.ReadValue<float>() > 0.1f || triggerRight.action.ReadValue<float>() > 0.1f)
-            {
-                startTrial();
-                DEBUG_TriggerPull = false;
-            }
-        }
+        //if (trialState == 0)
+        //{
+        //    if (DEBUG_TriggerPull || triggerLeft.action.ReadValue<float>() > 0.1f || triggerRight.action.ReadValue<float>() > 0.1f)
+        //    {
+        //        startTrial();
+        //        DEBUG_TriggerPull = false;
+        //    }
+        //}
 
-        else if (trialState == 1)
+        if (trialState == 1)
         {
             if (UnityEngine.Random.Range(0f, 1f) < PMAFrequency)
             {
@@ -126,5 +174,14 @@ public class TrialManager : MonoBehaviour
         }
 
         // trialState == 2 handled entirely by Cup collisions
+    }
+
+    private bool IsTriggerPressed()
+    {
+        Debug.Log("Trigger");
+        var left = leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out leftTrigger);
+        var right = rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out rightTrigger);
+
+        return leftTrigger || rightTrigger;
     }
 }
