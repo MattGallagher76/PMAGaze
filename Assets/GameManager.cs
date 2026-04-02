@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour
     public GameObject cupPrefab;
     //public GameObject ballPrefab;
 
-    Cup[] cupRegistry;
+    public Cup[] cupRegistry;
 
     public bool DEBUGMakeRandomSwap = false;
 
@@ -85,7 +85,7 @@ public class GameManager : MonoBehaviour
         scoreDisplay.text = "Score: " + cm.score.ToString("D2");
         foreach (Cup c in cupRegistry)
         {
-            Destroy(c);
+            Destroy(c.gameObject);
             cupRegistry = null;
         }
     }

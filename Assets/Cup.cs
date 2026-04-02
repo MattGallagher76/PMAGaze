@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Rendering;
 using UnityEngine;
 
 public class Cup : MonoBehaviour
@@ -16,6 +15,9 @@ public class Cup : MonoBehaviour
     Material primaryMat;
 
     public bool hasBeenSelected = false;
+
+    private float lastToggleTime = 0f;
+    private float toggleCooldown = 0.25f;
 
     public void initCup(int x, int y, int id, bool hasBall)
     {
@@ -40,15 +42,23 @@ public class Cup : MonoBehaviour
         primaryMat = mat;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    private void OnTriggerEnter(Collider other)
     {
-        
-    }
+        // Only allow interaction during selection phase
+        TrialManager tm = FindObjectOfType<TrialManager>();
+        if (tm == null || tm.trialState != 2)
+            return;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        // prevent rapid flickering toggles
+        if (Time.time - lastToggleTime < toggleCooldown)
+            return;
+
+        // detect controller by rigidbody (your setup)
+        if (other.attachedRigidbody != null)
+        {
+            hasBeenSelected = !hasBeenSelected;
+            showDebug(hasBeenSelected);
+            lastToggleTime = Time.time;
+        }
     }
 }
