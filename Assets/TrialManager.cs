@@ -38,12 +38,15 @@ public class TrialManager : MonoBehaviour
     public bool DEBUG_TriggerPull;
     public int cupCount;
 
-    // CMA Variables
-    public UnityEngine.XR.InputDevice leftController, rightController;
-    public Canvas valenceCanvas, arousalCanvas;
-    public bool leftTrigger, rightTrigger;
-    private Slider valenceSlider, arousalSlider; 
+    private string selectedCups, correctCups;
 
+    // CMA Variables
+    private UnityEngine.XR.InputDevice leftController, rightController;
+    public Canvas valenceCanvas, arousalCanvas;
+    private bool leftTrigger, rightTrigger;
+    private Slider valenceSlider, arousalSlider;
+    private Button valenceButton, arousalButton;
+    private float valence, arousal;
 
     void Start()
     {
@@ -51,9 +54,10 @@ public class TrialManager : MonoBehaviour
         triggerLeft.action.Enable();
 
         gm = FindObjectOfType<GameManager>();
-      //Random.InitState(userID * 1367);
+        //Random.InitState(userID * 1367);
 
-        dataLogFilePath = Path.Combine(Application.dataPath, "user" + userID + "trialStateLogging.csv");
+        dataLogFilePath = Path.Combine(Application.dataPath + "/", "UserLogs/user" + userID + "trialStateLogging.csv");
+        Debug.Log(dataLogFilePath);
 
         if (!File.Exists(dataLogFilePath))
         {
@@ -91,14 +95,14 @@ public class TrialManager : MonoBehaviour
     {
         trialState = 3;
 
-        string selectedCups = "";
+        selectedCups = "";
         foreach (Cup c in gm.getCups())
         {
             if (c.hasBeenSelected)
                 selectedCups += c.id + "-";
         }
 
-        string correctCups = "";
+        correctCups = "";
         foreach (Cup c in gm.getCups())
         {
             if (c.doesHaveBall)
@@ -108,43 +112,14 @@ public class TrialManager : MonoBehaviour
         gm.destroyCups(selectedCups.Equals(correctCups));
         // trialState = 0; //trialState = 0 means going back to the start.
         // INDICATE THE LAST ROW OF GAZE DATA TRACKED DURING THE TRIAL IN THE GAZE LOGGER CSV!
-     // trialState = 0;
-        
+        // trialState = 0;
+
         //The Valence canvas pops up.
         valenceCanvas.gameObject.SetActive(true);
         valenceSlider = FindFirstObjectByType<Slider>();
+        valenceButton = FindFirstObjectByType<Button>();
 
-        //If the trigger is pressed (on either controller),
-        if (IsTriggerPressed())
-        {
-            //Log the Valence for this trial, PMA, and participant.
-            var valence = valenceSlider.value;
-            //Disable the Valence canvas.
-            valenceCanvas.gameObject.SetActive(false);
-            //Enable the Arousal canvas.
-            arousalCanvas.gameObject.SetActive(true);
-            arousalSlider = FindFirstObjectByType<Slider>();
-            //if the trigger is pressed,
-            if (IsTriggerPressed())
-            {
-                //Log the Arousal for this trial, PMA, and participant.
-                var arousal = arousalSlider.value;
-                //Disable the Arousal canvas.
-                arousalCanvas.gameObject.SetActive(false);
-
-                string line = Time.time + "," + userID + "," + selectedCups + "," + (selectedCups.Equals(correctCups)) + "," + "TODO" + "," + "TODO" + "," + valence + "," + arousal;
-                if (!File.Exists(dataLogFilePath))
-                {
-                    File.WriteAllText(dataLogFilePath, line);
-                }
-
-            }
-
-        }
-        trialState = 0;
-        
-        
-
+        //The remaining logic taken care of by the valence and arousal buttons.
     }
 
     void Update()
@@ -176,12 +151,34 @@ public class TrialManager : MonoBehaviour
         // trialState == 2 handled entirely by Cup collisions
     }
 
-    private bool IsTriggerPressed()
+    public void LogValence()
     {
-        Debug.Log("Trigger");
-        var left = leftController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out leftTrigger);
-        var right = rightController.TryGetFeatureValue(UnityEngine.XR.CommonUsages.triggerButton, out rightTrigger);
+        //Log the Valence for this trial, PMA, and participant.
+        valence = valenceSlider.value;
+        //Disable the Valence canvas.
+        valenceCanvas.gameObject.SetActive(false);
+        //Enable the Arousal canvas.
+        arousalCanvas.gameObject.SetActive(true);
+        arousalSlider = FindFirstObjectByType<Slider>();
+        arousalButton = FindFirstObjectByType<Button>();
 
-        return leftTrigger || rightTrigger;
+        
+    }
+
+    public void LogArousal()
+    {
+        //Log the Arousal for this trial, PMA, and participant.
+        arousal = arousalSlider.value;
+        //Disable the Arousal canvas.
+        arousalCanvas.gameObject.SetActive(false);
+
+        string line = Time.time + "," + userID + "," + selectedCups + "," + (selectedCups.Equals(correctCups)) + "," + "TODO" + "," + "TODO" + "," + valence + "," + arousal;
+        if (!File.Exists(dataLogFilePath))
+        {
+            File.WriteAllText(dataLogFilePath, line);
+        }
+        trialState = 0;
+
+        
     }
 }
