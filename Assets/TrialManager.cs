@@ -16,7 +16,7 @@ public class TrialManager : MonoBehaviour
 
     public int PMACount;
 
-    public int currentPMA;
+    public int currentPMA = 0;
 
     public ContrastPMA contrastPMA;
     public BufferPMA bufferPMA;
@@ -81,7 +81,7 @@ public class TrialManager : MonoBehaviour
         if (currentTrialCount % (trialCount / baselineCount) == 0)
             currentPMA = 0;
         else
-            currentPMA = UnityEngine.Random.Range(1, PMACount);
+            currentPMA++;
 
         Debug.Log("Current PMA: " + currentPMA);
     }
