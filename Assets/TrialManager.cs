@@ -59,10 +59,12 @@ public class TrialManager : MonoBehaviour
         gm.startTrialSequence();
         currentTrialCount++;
 
-        if (currentTrialCount % (trialCount / baselineCount) == 0)
-            currentPMA = 0;
-        else
-            currentPMA = UnityEngine.Random.Range(1, PMACount + 1);
+        currentPMA = 0;
+
+        //if (currentTrialCount % (trialCount / baselineCount) == 0)
+        //    currentPMA = 0;
+        //else
+        //    currentPMA = UnityEngine.Random.Range(1, PMACount + 1);
 
         Debug.Log("Current PMA: " + currentPMA);
     }
