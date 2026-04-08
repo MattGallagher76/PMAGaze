@@ -45,9 +45,11 @@ public class CosmeticSelector : MonoBehaviour, IPointerEnterHandler, IPointerExi
         {
             if (cosMang.score >= cost)
             {
+                cosMang.score -= cost;
                 cosMang.unlockCupCosmetic(index);
                 costText.text = "Unlocked";
                 isLocked = false;
+                FindObjectOfType<GameManager>().scoreDisplay.text = "Score: " + cosMang.score.ToString("D2");
             }
             else
             {

@@ -43,6 +43,7 @@ public class TrialManager : MonoBehaviour
     // CMA Variables
     private UnityEngine.XR.InputDevice leftController, rightController;
     public Canvas valenceCanvas, arousalCanvas;
+    public AudioSource correct, incorrect;
     private bool leftTrigger, rightTrigger;
     private Slider valenceSlider, arousalSlider;
     private Button valenceButton, arousalButton;
@@ -78,10 +79,15 @@ public class TrialManager : MonoBehaviour
         gm.startTrialSequence();
         currentTrialCount++;
 
-        if (currentTrialCount % (trialCount / baselineCount) == 0)
+
+        currentPMA = 2;
+
+        /*
+                 if (currentTrialCount % (trialCount / baselineCount) == 0)
             currentPMA = 0;
         else
             currentPMA++;
+        */
 
         Debug.Log("Current PMA: " + currentPMA);
     }
@@ -114,6 +120,15 @@ public class TrialManager : MonoBehaviour
         // INDICATE THE LAST ROW OF GAZE DATA TRACKED DURING THE TRIAL IN THE GAZE LOGGER CSV!
         // trialState = 0;
 
+        if (selectedCups.Equals(correctCups))
+        {
+            correct.Play();
+        }
+        else
+        {
+            incorrect.Play();
+        }
+
         //The Valence canvas pops up.
         valenceCanvas.gameObject.SetActive(true);
         valenceSlider = FindFirstObjectByType<Slider>();
@@ -140,7 +155,7 @@ public class TrialManager : MonoBehaviour
                 switch (currentPMA)
                 {
                     case 1: contrastPMA.Attack(); break;
-                    case 2: bufferPMA.Attack(); break;
+//                    case 2: bufferPMA.Attack(); break;
                     case 3: speedPMA.Attack(); break;
                     case 4: lightPMA.Attack(); break;
                     case 5: soundPMA.Attack(); break;
@@ -173,6 +188,7 @@ public class TrialManager : MonoBehaviour
         arousalCanvas.gameObject.SetActive(false);
 
         string line = Time.time + "," + userID + "," + selectedCups + "," + (selectedCups.Equals(correctCups)) + "," + "TODO" + "," + "TODO" + "," + valence + "," + arousal;
+
         if (!File.Exists(dataLogFilePath))
         {
             File.WriteAllText(dataLogFilePath, line);

@@ -41,20 +41,26 @@ public class EyeTrackingManager : MonoBehaviour
 
     void Start()
     {
-        SetGazeOutputFrequency(GazeOutputFrequency.Frequency200Hz);
-        SetFilePath("GazePilot");
+        if(IsGazeAllowed() && IsGazeAvailable())
+        {
+            //SetGazeOutputFrequency(GazeOutputFrequency.Frequency200Hz);
+            SetFilePath("GazePilot");
+        }
         tm = FindObjectOfType<TrialManager>();
     }
 
     private void FixedUpdate()
     {
-        int sampleCount = VarjoEyeTracking.GetGazeList(out gazeDataList);
-
-        foreach (var sample in gazeDataList)
+        if (IsGazeAllowed() && IsGazeAvailable())
         {
-            //Debug.Log($"Time: {sample.captureTime}, Status: {sample.status}, Gaze: {sample.gaze.forward}");
-            WriteGaze(sample);
-            //Debug.Log(sampleCount);
+            int sampleCount = VarjoEyeTracking.GetGazeList(out gazeDataList);
+
+            foreach (var sample in gazeDataList)
+            {
+                //Debug.Log($"Time: {sample.captureTime}, Status: {sample.status}, Gaze: {sample.gaze.forward}");
+                WriteGaze(sample);
+                //Debug.Log(sampleCount);
+            }
         }
     }
 
@@ -90,6 +96,7 @@ public class EyeTrackingManager : MonoBehaviour
 
     public void WriteGaze(VarjoEyeTracking.GazeData gazeData)
     {
+        return;
         frameNumber = gazeData.frameNumber;
         captureTime = gazeData.captureTime;
         if (prevCaptureTime == -1) {

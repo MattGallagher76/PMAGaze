@@ -6,11 +6,9 @@ using UnityEngine;
 public class SoundPMA : MonoBehaviour
 {
     [Header("Sound to play for the attack.")]
-    public AudioClip clip;
+    public AudioSource audS;
     [Header("Test the attack.")]
     public bool test;
-
-    public AudioSource audS;
     // Start is called before the first frame update
     void Start()
     {

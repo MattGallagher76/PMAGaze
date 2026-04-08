@@ -6,6 +6,8 @@ public class LightPMA : MonoBehaviour
 {
     [Header("Light to use for the attack.")]
     public Light PMALight;
+    [Header("Skybox to change into for the attack.")]
+    public Material skybox;
 
     [Range(0f, 1f)] [Header("How dark the light should become. Lower = darker.")]
 
@@ -18,11 +20,13 @@ public class LightPMA : MonoBehaviour
     private float initialIntensity;
     private float endTime;
     private bool activeTest;
+    private Material oldSkybox;
 
     // Start is called before the first frame update
     void Start()
     {
         initialIntensity = PMALight.intensity;
+        oldSkybox = RenderSettings.skybox;
         endTime = 0;
         activeTest = false;
     }
@@ -34,6 +38,8 @@ public class LightPMA : MonoBehaviour
         {
             activeTest = false;
             PMALight.intensity = initialIntensity;
+            RenderSettings.skybox = oldSkybox;
+            DynamicGI.UpdateEnvironment();
         }
         if(!activeTest && PMATest)
         {
@@ -41,6 +47,8 @@ public class LightPMA : MonoBehaviour
             endTime = Time.time + PMATime;
             activeTest = true;
             PMALight.intensity = PMAIntensity;
+            RenderSettings.skybox = skybox;
+            DynamicGI.UpdateEnvironment();
         }
     }
 

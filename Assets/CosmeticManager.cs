@@ -37,10 +37,19 @@ public class CosmeticManager : MonoBehaviour
 
     public void unlockCupCosmetic(int index)
     {
+        selectedMaterial = index;
         Cup[] cList = gm.getCups();
-        foreach(Cup c in cList)
+        if(cList != null)
         {
-            c.setBaselineMaterial(index == 0 ? firstCosmetic : index == 1 ? secondCosmetic : finalCosmetic);
+            foreach (Cup c in cList)
+            {
+                c.setBaselineMaterial(index == 0 ? baseMaterial : index == 1 ? firstCosmetic : index == 2 ? secondCosmetic : finalCosmetic);
+            }
         }
+    }
+
+    public void setCupMat(int index, Cup c)
+    {
+        c.setBaselineMaterial(index == 0 ? baseMaterial : index == 1 ? firstCosmetic : index == 2 ? secondCosmetic : finalCosmetic);
     }
 }

@@ -40,6 +40,14 @@ public class GameManager : MonoBehaviour
     CosmeticManager cm;
     public TextMeshProUGUI scoreDisplay;
 
+    public int minBufferPauseCount = 1;
+    public int maxBufferPauseCount = 3;
+
+    public float minBufferPauseDuration = 0.05f;
+    public float maxBufferPauseDuration = 0.2f;
+    public float bufferedVisualFPS = 10f;
+    public float bufferPercentage;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -50,9 +58,9 @@ public class GameManager : MonoBehaviour
     public void buildCups()
     {
         cupRegistry = new Cup[horizontalCount * verticalCount];
-        for(int x = 0; x < horizontalCount; x ++)
+        for (int x = 0; x < horizontalCount; x++)
         {
-            for(int y = 0; y < verticalCount; y ++)
+            for (int y = 0; y < verticalCount; y++)
             {
                 GameObject gb = Instantiate(cupPrefab);
                 gb.transform.parent = swapObjectsOrigin.transform;
@@ -62,6 +70,7 @@ public class GameManager : MonoBehaviour
 
                 gb.transform.localPosition = new Vector3(xPos * horizontalOffset, yPos * verticalOffset, 0);
                 gb.GetComponent<Cup>().initCup(x, y, y * horizontalCount + x, false);
+                cm.setCupMat(cm.selectedMaterial, gb.GetComponent<Cup>());
                 cupRegistry[y * horizontalCount + x] = gb.GetComponent<Cup>();
                 swapList.Add(y * horizontalCount + x);
             }
@@ -73,8 +82,15 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < ballCupCount; i++)
         {
             int ballIndex = UnityEngine.Random.Range(0, cupRegistry.Length);
-            cupRegistry[ballIndex].doesHaveBall = true;
-            ballCup[i] = cupRegistry[ballIndex];
+            if(cupRegistry[ballIndex].doesHaveBall)
+            {
+                i--;
+            }
+            else
+            {
+                cupRegistry[ballIndex].doesHaveBall = true;
+                ballCup[i] = cupRegistry[ballIndex];
+            }    
             //Debug.Log(i);
         }
     }
@@ -119,8 +135,8 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator SwapCupsHalfCircle(int indexA, int indexB, float duration)
     {
-        Debug.Log(cupRegistry[indexA].id);
-        Debug.Log(cupRegistry[indexB].id);
+        //Debug.Log(cupRegistry[indexA].id);
+        //Debug.Log(cupRegistry[indexB].id);
 
         Transform a = cupRegistry[indexA].transform;
         Transform b = cupRegistry[indexB].transform;
@@ -180,6 +196,76 @@ public class GameManager : MonoBehaviour
         swapList.Insert(Random.Range(0, swapList.Count + 1), indexB);
     }
 
+    public IEnumerator SwapCupsDroppedFrames(int indexA, int indexB, float duration)
+    {
+        Transform a = cupRegistry[indexA].transform;
+        Transform b = cupRegistry[indexB].transform;
+
+        Vector3 a0 = a.position;
+        Vector3 b0 = b.position;
+
+        Vector3 center = (a0 + b0) * 0.5f;
+
+        Vector3 v = b0 - a0;
+        Vector3 worldZ = Vector3.forward;
+
+        Vector3 n = Vector3.Cross(v, worldZ);
+
+        if (n.sqrMagnitude < 1e-8f)
+            n = Vector3.Cross(v, Vector3.up);
+
+        if (n.sqrMagnitude < 1e-8f)
+            n = Vector3.right;
+
+        n.Normalize();
+
+        Vector3 offsetA = a0 - center;
+        Vector3 offsetB = b0 - center;
+
+        Quaternion down = Quaternion.Euler(downEulerOffset);
+
+        float frameStep = 1f / Mathf.Max(0.01f, bufferedVisualFPS);
+
+        float elapsed = 0f;
+        float nextVisualUpdate = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+
+            if (elapsed >= nextVisualUpdate)
+            {
+                float snappedElapsed = Mathf.Min(nextVisualUpdate, duration);
+                float u = Mathf.Clamp01(snappedElapsed / Mathf.Max(0.0001f, duration));
+                float angDeg = 180f * u;
+
+                Vector3 aPos = center + RotateAroundAxis(offsetA, n, angDeg);
+                Vector3 bPos = center + RotateAroundAxis(offsetB, n, angDeg);
+
+                a.position = aPos;
+                b.position = bPos;
+
+                a.rotation = down;
+                b.rotation = down;
+
+                nextVisualUpdate += frameStep;
+            }
+
+            yield return null;
+        }
+
+        a.position = b0;
+        b.position = a0;
+
+        a.rotation = down;
+        b.rotation = down;
+
+        (cupRegistry[indexA], cupRegistry[indexB]) = (cupRegistry[indexB], cupRegistry[indexA]);
+
+        swapList.Insert(Random.Range(0, swapList.Count + 1), indexA);
+        swapList.Insert(Random.Range(0, swapList.Count + 1), indexB);
+    }
+
     private static Vector3 RotateAroundAxis(Vector3 v, Vector3 axisUnit, float angleDeg)
     {
         return Quaternion.AngleAxis(angleDeg, axisUnit) * v;
@@ -200,7 +286,7 @@ public class GameManager : MonoBehaviour
 
     public void debugMatBallCups(bool showState)
     {
-        foreach(Cup c in getCups())
+        foreach (Cup c in getCups())
         {
             c.showDebug(showState);
         }
@@ -225,11 +311,19 @@ public class GameManager : MonoBehaviour
             int indexA = PopRandomAvailable();
             int indexB = PopRandomAvailable();
 
-            StartCoroutine(SwapCupsHalfCircle(
-                indexA,
-                indexB,
-                Random.Range(switchSpeedRange[0], switchSpeedRange[1])
-            ));
+
+            if (tm.currentPMA == 2 && Random.Range(0f, 1f) > bufferPercentage)
+                StartCoroutine(SwapCupsDroppedFrames(
+                    indexA,
+                    indexB,
+                    Random.Range(switchSpeedRange[0], switchSpeedRange[1])
+                ));
+            else
+                StartCoroutine(SwapCupsHalfCircle(
+                    indexA,
+                    indexB,
+                    Random.Range(switchSpeedRange[0], switchSpeedRange[1])
+                ));
             float wait = Random.Range(timeBetweenSwapStartRange[0], timeBetweenSwapStartRange[1]);
             yield return new WaitForSeconds(wait);
 
