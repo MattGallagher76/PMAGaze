@@ -9,6 +9,8 @@ public class SoundPMA : MonoBehaviour
     public AudioClip clip;
     [Header("Test the attack.")]
     public bool test;
+
+    public AudioSource audS;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,7 +23,8 @@ public class SoundPMA : MonoBehaviour
         if(test)
         {
             test = false;
-            AudioSource.PlayClipAtPoint(clip, new Vector3(0, 0, 0), 1f);
+            audS.volume = Random.Range(1f, 3f);
+            audS.Play();//, new Vector3(0, 0, 0), 1f);
         }
     }
 

@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
             int ballIndex = UnityEngine.Random.Range(0, cupRegistry.Length);
             cupRegistry[ballIndex].doesHaveBall = true;
             ballCup[i] = cupRegistry[ballIndex];
-            Debug.Log(i);
+            //Debug.Log(i);
         }
     }
 
@@ -88,6 +88,7 @@ public class GameManager : MonoBehaviour
             Destroy(c.gameObject);
             cupRegistry = null;
         }
+        swapList.Clear();
     }
 
     void ShuffleList(List<int> swapList)
@@ -118,6 +119,9 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator SwapCupsHalfCircle(int indexA, int indexB, float duration)
     {
+        Debug.Log(cupRegistry[indexA].id);
+        Debug.Log(cupRegistry[indexB].id);
+
         Transform a = cupRegistry[indexA].transform;
         Transform b = cupRegistry[indexB].transform;
 

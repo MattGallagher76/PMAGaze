@@ -11,7 +11,7 @@ public class LightPMA : MonoBehaviour
 
     public float PMAIntensity;
     [Header("How long in seconds the attack should last.")]
-    public int PMATime;
+    public float PMATime;
     [Header("Click to test the attack.")]
 
     public bool PMATest;

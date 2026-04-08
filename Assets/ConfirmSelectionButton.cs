@@ -25,7 +25,7 @@ public class ConfirmSelectionButton : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.name.ToLower().Contains("controller"))
+        if (other.gameObject.name.ToLower().Contains("controller") && tm.trialState == 2)
         {
             tm.confirmSelection();
         }
